@@ -7,6 +7,10 @@
 
 using namespace std;
 
+#ifdef __amigaos4__
+extern bool gVSync;
+#endif
+
 
 GoSDL::Window::Window (unsigned width, unsigned height, std::string caption, bool fullscreen, double updateInterval) :
     mWidth(width), mHeight(height), mCaption(caption), mFullscreen(fullscreen), mUpdateInterval(updateInterval)
@@ -45,11 +49,15 @@ GoSDL::Window::Window (unsigned width, unsigned height, std::string caption, boo
                                 #endif
                                 SDL_WINDOW_RESIZABLE );
 
+#ifndef __amigaos4__
+
     // Set window icon
     std::string iconPath = getBasePath() + "media/freegemas.ico";
     SDL_Surface* icon = IMG_Load(iconPath.c_str());
     SDL_SetWindowIcon(mWindow, icon);
     SDL_FreeSurface(icon);
+    
+#endif
 
     // If window could not be created, throw an error
     if (mWindow == NULL )
@@ -59,8 +67,16 @@ GoSDL::Window::Window (unsigned width, unsigned height, std::string caption, boo
 
     SDL_GetWindowSize(mWindow, &mWindowWidth, &mWindowHeight);
 
+    Uint32 flags = SDL_RENDERER_ACCELERATED;
+
+#ifdef __amigaos4__
+    if (gVSync) {
+        flags |= SDL_RENDERER_PRESENTVSYNC;
+    }
+#endif
+
     // Create renderer for the window
-    mRenderer = SDL_CreateRenderer( mWindow, -1, SDL_RENDERER_ACCELERATED );
+    mRenderer = SDL_CreateRenderer( mWindow, -1, flags);
 
     // If rendered could not be created, throw an error
     if (mRenderer == NULL )
@@ -128,11 +144,16 @@ void GoSDL::Window::show()
         // Render to a texture first instead of directly to the window
         SDL_SetRenderTarget(mRenderer, mScreen);
 
+// On AmigaOS 4 we prefer to use VSync
+#ifndef __amigaos4__
+
         // Get ticks from last frame and compare with framerate
         if (newTicks - mLastTicks < mUpdateInterval)
         {
             continue;
         }
+
+#endif
 
         // Event loop
         while (SDL_PollEvent (&e))

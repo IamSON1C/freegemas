@@ -107,7 +107,12 @@ GoSDL::Image GoSDL::Font::surfaceToImage (SDL_Surface * tempSurface) {
 GoSDL::Image GoSDL::Font::surfaceToImageWithShadow (SDL_Surface * textSurface, SDL_Surface * shadowSurface, int shadowX, int shadowY) {
     SDL_Rect rect;
 
+#ifndef __amigaos4__
     SDL_Surface * tempSurface = SDL_CreateRGBSurfaceWithFormat(0, shadowX + shadowSurface->w, shadowY + shadowSurface->h, 32, SDL_PIXELFORMAT_RGBA32);
+#else
+    // On AmigaOS 4 we use the same Pixelformat as set in 'go_window.cpp' to avoid conversions
+    SDL_Surface * tempSurface = SDL_CreateRGBSurfaceWithFormat(0, shadowX + shadowSurface->w, shadowY + shadowSurface->h, 32, SDL_PIXELFORMAT_RGBA8888);
+#endif
 
     rect.x = shadowX;
     rect.y = shadowY;

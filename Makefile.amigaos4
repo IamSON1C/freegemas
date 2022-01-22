@@ -1,0 +1,43 @@
+# Freegemas - AmigaOS 4 Makefile
+
+CXX = g++
+
+INCPATH = -I. -I/sdk/local/newlib/include -I/sdk/local/newlib/include/SDL2 -I"include"
+
+DEPDIR = build
+DEPFLAGS = -MMD -MP -MF $(DEPDIR)/$*.d
+
+CXXFLAGS = -std=c++11 -Ofast -athread=native
+CXXFLAGS_ALL = $(INCPATH) $(DEPFLAGS) $(CXXFLAGS)
+
+LDFLAGS =
+LDFLAGS_ALL = $(LDFLAGS)
+
+LIBS = -lSDL2_gfx -lSDL2_image -ljpeg -ltiff -lwebp -lpng -lSDL2_ttf -lfreetype -lSDL2_mixer -lflac -lmikmod -lmodplug -lsmpeg2 -lvorbisfile -lvorbis -logg -lsdl2 -lz -ljsoncpp -lstdc++ -lpthread -lauto
+
+SOURCES = src/Animation.cpp src/go_font.cpp src/State.cpp \
+					src/BaseButton.cpp src/go_image.cpp src/StateGame.cpp \
+					src/Board.cpp src/go_music.cpp src/StateGameEndless.cpp \
+					src/Ecuaciones.cpp src/go_sound.cpp src/StateGameTimetrial.cpp \
+					src/Game.cpp src/go_window.cpp src/StateHowtoplay.cpp \
+					src/GameBoard.cpp src/log.cpp src/StateMainMenu.cpp \
+					src/GameHint.cpp src/main.cpp src/StateOptions.cpp \
+					src/GameIndicators.cpp src/OptionsManager.cpp src/Util.cpp \
+					src/GameSounds.cpp src/ScoreTable.cpp
+
+OBJECTS = $(SOURCES:%=$(DEPDIR)/%.o)
+DEPENDENCIES = $(SOURCES:%=$(DEPDIR)/%.d)
+
+all: Freegemas
+
+include $(wildcard $(DEPENDENCIES))
+
+$(DEPDIR)/%.o: %
+	mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS_ALL) $< -o $@ -c
+
+Freegemas: $(OBJECTS)
+	$(CXX) $(CXXFLAGS_ALL) $(LDFLAGS_ALL) $^ -o $@ $(LIBS)
+
+clean: $(OBJECTS) $(DEPENDENCIES) Freegemas
+	 rm $^

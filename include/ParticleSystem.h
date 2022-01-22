@@ -13,6 +13,10 @@
 
 #define lim 0.70
 
+#ifdef __amigaos4__
+extern bool gLowCPU;
+#endif
+
 namespace GoSDL {
     class Window;
 }
@@ -100,6 +104,13 @@ public:
         mPosY(y),
         mActive(true)
     {
+
+#ifdef __amigaos4__
+        if (gLowCPU) {
+            mParticleQuantity /= 3;
+            mTotalSteps /= 2;
+        }
+#endif
         // Reserve the space for the particles
         mParticleVector.reserve(mParticleQuantity);
 

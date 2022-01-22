@@ -56,11 +56,13 @@ std::ostringstream& Log::Get(TLogLevel level)
 }
 
 Log::~Log(){
+#ifdef DEBUG
     os << Log::cDef << std::endl;
     if(salida){
         fprintf(stderr, "%s", os.str().c_str());
         fflush(stderr);
     }
+#endif
 }
 
 bool Log::salida = true;

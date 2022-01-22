@@ -110,9 +110,15 @@ void StateMainMenu::draw(){
     // Loop to draw the menu items
     for(size_t i = 0, s = (int) mMenuTargets.size(); i < s; ++i)
     {
+#ifndef __amigaos4__
         // Calculate the horizontal and vertical positions
 		int posX = std::round(800 / 2 - mMenuRenderedTexts[i].getWidth() / 2),
+            posY = mMenuYStart + i * mMenuYGap; 
+#else
+        // Calculate the horizontal and vertical positions
+		int posX = round(800 / 2 - mMenuRenderedTexts[i].getWidth() / 2),
             posY = mMenuYStart + i * mMenuYGap;
+#endif
 
         // Draw the text and the shadow
         mMenuRenderedTexts[i].draw(posX, posY, 3);
